@@ -18,19 +18,17 @@ jobs:
         id: version
         run: |
           git fetch --tags
-          # Get the highest existing version tag (offline-v*)
-          latest=$(git tag -l 'offline-v*' | sed 's/offline-v//' | sort -n | tail -1)
-          if [ -z "$latest" ]; then
-            next=1
-          else
-            next=$((latest + 1))
-          fi
-          # Get short commit SHA (7 chars)
+          # Releases are named after the upstream opencode version they are built from:
+          # v1.18.35-offline, then v1.18.35-offline.2, .3, ... for rebuilds of the same version
+          upstream=$(jq -r .version packages/opencode/package.json)
+          base="v${upstream}-offline"
+          count=$(git tag -l "${base}" "${base}.*" | wc -l)
+          if [ "$count" -eq 0 ]; then tag="$base"; else tag="${base}.$((count + 1))"; fi
           sha=$(git rev-parse --short=7 HEAD)
-          echo "version=$next" >> $GITHUB_OUTPUT
-          echo "tag=offline-v$next" >> $GITHUB_OUTPUT
+          echo "version=${tag#v}" >> $GITHUB_OUTPUT
+          echo "tag=$tag" >> $GITHUB_OUTPUT
           echo "sha=$sha" >> $GITHUB_OUTPUT
-          echo "Calculated version: $next (tag: offline-v$next, sha: $sha)"
+          echo "Calculated version: ${tag#v} (tag: $tag, sha: $sha)"
 
       - uses: ./.github/actions/setup-bun
 

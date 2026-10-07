@@ -42,7 +42,7 @@ The goal is to make upstream syncs as painless as possible by:
 | LSP enabled by default | `Offline.lsp()` guard in `lsp/lsp.ts` (upstream defaults `lsp` to off) |
 | npm plugins/providers | `Npm.add` resolves from `deps/node_modules`; `Npm.install` is skipped |
 | noexec `/tmp` | Wrapper sets `BUN_TMPDIR` so embedded native libraries extract to `~/.cache/opencode/native` |
-| Version display | Packager builds with `OPENCODE_VERSION=<upstream>-offline.<n>+<sha>` |
+| Version display | Releases are tagged `v<upstream>-offline[.n]` (e.g. `v1.18.35-offline`); the packager builds with `OPENCODE_VERSION=<upstream>-offline[.n]+<sha>` |
 | `/curl` debug command | `opencode/src/offline/request-capture.ts` (capture + raw route) and a TUI builtin plugin |
 
 Fork-touched upstream files (all marked `// offline-fork`): `packages/core/src/npm.ts`, `packages/opencode/src/lsp/{lsp,server}.ts`, `packages/opencode/src/provider/provider.ts`, `packages/opencode/src/server/routes/instance/httpapi/server.ts`, `packages/tui/src/feature-plugins/builtins.ts`, `.dockerignore`. List them with `git grep -n "offline-fork"`.

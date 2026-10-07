@@ -18,11 +18,12 @@ if (!(await fs.stat(DEPS).catch(() => undefined))) {
 }
 
 const upstream = (await Bun.file("packages/opencode/package.json").json()).version as string
-const bundle = process.env.BUNDLE_VERSION ?? "dev"
+// Release version from the offline-bundle workflow, e.g. 1.18.35-offline or 1.18.35-offline.2
+const bundle = process.env.BUNDLE_VERSION ?? `${upstream}-offline.dev`
 const sha = process.env.BUNDLE_COMMIT_SHA ?? (await $`git rev-parse --short=7 HEAD`.nothrow().text()).trim()
-// Shown by `opencode --version` and in the TUI, e.g. 1.18.35-offline.12+abc1234.
+// Shown by `opencode --version` and in the TUI, e.g. 1.18.35-offline+abc1234.
 // A non-0.0.0 version also selects the "latest" channel, so data lives in the standard opencode.db.
-const version = `${upstream}-offline.${bundle}${sha ? `+${sha}` : ""}`
+const version = `${bundle}${sha ? `+${sha}` : ""}`
 
 console.log(`\n=== Building opencode ${version} for linux-x64 ===`)
 await $`bun run ./script/build.ts --single`.cwd("packages/opencode").env({
